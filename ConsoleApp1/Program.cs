@@ -1,70 +1,100 @@
 ﻿using ConsoleApp1;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-class ChuongTrinh
+
+namespace ConsoleApp1
 {
-    static void Main(string[] args)
+    class Program
     {
-        QuanLyBuuPham quanLy = new QuanLyBuuPham();
-
-        quanLy.NhapTuDong();
-
-        int luaChon;
-        do
+        static void Main(string[] args)
         {
-            Console.WriteLine("\n=== QUAN LY BUU PHAM ===");
-            Console.WriteLine("1. Nhap thong tin buu pham");
-            Console.WriteLine("2. Hien thi tat ca buu pham");
-            Console.WriteLine("3. Dem so luong hang hoa");
-            Console.WriteLine("4. Tim thu theo ten nguoi nhan");
-            Console.WriteLine("5. Sap xep buu pham theo ten nguoi nhan va phi van chuyen");
-            Console.WriteLine("6. Xoa thu thuong");
-            Console.WriteLine("7. Tinh tong phi van chuyen");
-            Console.WriteLine("0. Thoat");
-            Console.Write("Nhap lua chon cua ban: ");
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+            Console.WriteLine("Chương trình quản lý bưu phẩm");
 
-            if (!int.TryParse(Console.ReadLine(), out luaChon))
-            {
-                luaChon = -1;
-            }
+            PostOffice postOffice = new PostOffice();
+            postOffice.AddPackageAutomatic();
 
-            switch (luaChon)
+            bool exit = false;
+            while (!exit)
             {
-                case 1:
-                    quanLy.NhapBuuPham();
-                    break;
-                case 2:
-                    quanLy.HienThiTatCaBuuPham();
-                    break;
-                case 3:
-                    Console.WriteLine($"\nTong so hang hoa: {quanLy.DemSoLuongHangHoa()}");
-                    break;
-                case 4:
-                    Console.Write("\nNhap ten nguoi nhan can tim: ");
-                    string tenNguoiNhan = Console.ReadLine();
-                    quanLy.TimThuTheoNguoiNhan(tenNguoiNhan);
-                    break;
-                case 5:
-                    quanLy.SapXepBuuPham();
-                    Console.WriteLine("\nDa sap xep buu pham theo ten nguoi nhan va phi van chuyen.");
-                    quanLy.HienThiTatCaBuuPham();
-                    break;
-                case 6:
-                    quanLy.XoaThuThuong();
-                    Console.WriteLine("\nDa xoa tat ca thu thuong.");
-                    quanLy.HienThiTatCaBuuPham();
-                    break;
-                case 7:
-                    Console.WriteLine($"\nTong phi van chuyen: {quanLy.TinhTongPhiVanChuyen()} VND");
-                    break;
-                case 0:
-                    Console.WriteLine("\nCam on ban da su dung chuong trinh!");
-                    break;
-                default:
-                    Console.WriteLine("\nDu lieu khong hop le, vui long nhap lai!");
-                    break;
+                Console.WriteLine("\n===== MENU =====");
+                Console.WriteLine("1. Hiển thị tất cả bưu phẩm");
+                Console.WriteLine("2. Đếm số lượng hàng hóa");
+                Console.WriteLine("3. Xuất thông tin thư theo người nhận");
+                Console.WriteLine("4. Sắp xếp và hiển thị bưu phẩm theo tên người nhận và phí vận chuyển");
+                Console.WriteLine("5. Xóa thông tin về thư thường");
+                Console.WriteLine("6. Tính tổng phí vận chuyển");
+                Console.WriteLine("7. Hiển thị thông tin thư express");
+                Console.WriteLine("8. Tìm bưu phẩm có phí vận chuyển cao nhất");
+                Console.WriteLine("0. Thoát");
+                Console.Write("Chọn chức năng: ");
+
+                if (int.TryParse(Console.ReadLine(), out int choice))
+                {
+                    switch (choice)
+                    {
+                        case 0:
+                            exit = true;
+                            break;
+                        case 1:
+                            postOffice.DisplayAllPackages();
+                            break;
+                        case 2:
+                            Console.WriteLine($"Số lượng hàng hóa: {postOffice.CountMerchandise()}");
+                            break;
+                        case 3:
+                            Console.Write("Nhập tên người nhận: ");
+                            string name = Console.ReadLine() ?? "";
+                            postOffice.DisplayLettersByRecipient(name);
+                            break;
+                        case 4:
+                            postOffice.DisplaySortedPackages();
+                            break;
+                        case 5:
+                            postOffice.RemoveRegularLetters();
+                            Console.WriteLine("Đã xóa thông tin về thư thường");
+                            postOffice.DisplayAllPackages();
+                            break;
+                        case 6:
+                            Console.WriteLine($"Tổng phí vận chuyển: {postOffice.CalculateTotalShippingFee()} VND");
+                            break;
+                        case 7:
+                            var expressLetters = postOffice.GetExpressLetters().ToList();
+                            if (expressLetters.Any())
+                            {
+                                Console.WriteLine("Danh sách thư express:");
+                                foreach (var letter in expressLetters)
+                                {
+                                    letter.DisplayInformation();
+                                    Console.WriteLine("------------------------");
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("Không có thư express nào");
+                            }
+                            break;
+                        case 8:
+                            var maxFeePackage = postOffice.OrderByDescending(p => p.Calculate()).FirstOrDefault();
+                            if (maxFeePackage != null)
+                            {
+                                Console.WriteLine("Bưu phẩm có phí vận chuyển cao nhất:");
+                                maxFeePackage.DisplayInformation();
+                            }
+                            else
+                            {
+                                Console.WriteLine("Không có bưu phẩm nào");
+                            }
+                            break;
+                        default:
+                            Console.WriteLine("Chức năng không hợp lệ!");
+                            break;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Vui lòng nhập số!");
+                }
             }
-        } while (luaChon != 0);
+        }
     }
 }

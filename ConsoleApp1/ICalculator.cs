@@ -8,6 +8,6 @@ namespace ConsoleApp1
 {
     internal interface ICalculator
     {
-        double Calculate(double x, double y);
+        double Calculate();
     }
 }
